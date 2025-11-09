@@ -1,26 +1,16 @@
-import { db } from "./db";
-import { decks, cards, reviews } from "./schema";
+import { createDeck } from "../decks";
+import { db } from "../db";
+import { cards, reviews } from "../schema";
 
 export async function seed() {
   console.log("Seeding database...");
 
   // Create 2 decks
-  const insertedDecks = await db
-    .insert(decks)
-    .values([
-      {
-        name: "JavaScript Basics",
-        description: "Core JavaScript concepts and syntax",
-      },
-      {
-        name: "Web APIs",
-        description: "Common web browser APIs",
-      },
-    ])
-    .returning();
-
-  const deck1 = insertedDecks[0];
-  const deck2 = insertedDecks[1];
+  const deck1 = await createDeck(
+    "JavaScript Basics",
+    "Core JavaScript concepts and syntax"
+  );
+  const deck2 = await createDeck("Web APIs", "Common web browser APIs");
 
   if (!deck1 || !deck2) {
     throw new Error("Failed to create decks");
