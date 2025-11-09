@@ -1,26 +1,9 @@
 import { Database } from "bun:sqlite";
+import { drizzle } from "drizzle-orm/bun-sqlite";
+import * as schema from "./schema";
 
-// Initialize the database
-const db = new Database("anki.db");
+const sqlite = new Database("anki.db");
 
-// Create a simple table for demo purposes
-db.run(`
-  CREATE TABLE IF NOT EXISTS items (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    created_at INTEGER DEFAULT (unixepoch())
-  )
-`);
+export const db = drizzle(sqlite, { schema });
 
-// Helper functions
-export function addItem(name: string) {
-  const query = db.query("INSERT INTO items (name) VALUES (?)");
-  query.run(name);
-}
-
-export function getItems() {
-  const query = db.query("SELECT * FROM items");
-  return query.all();
-}
-
-export default db;
+export { sqlite };
