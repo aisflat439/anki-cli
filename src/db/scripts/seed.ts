@@ -1,4 +1,4 @@
-import { createDeck } from "../decks";
+import { createDeck } from "../domain/decks";
 import { db } from "../db";
 import { cards, reviews } from "../schema";
 
