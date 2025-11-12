@@ -1,3 +1,4 @@
+#!/usr/bin/env bun
 import { TextAttributes, createCliRenderer } from "@opentui/core";
 import { createRoot } from "@opentui/react";
 import { getAllDecks } from "./db/domain/decks";

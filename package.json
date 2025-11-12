@@ -1,8 +1,29 @@
 {
   "name": "anki-cli",
+  "version": "0.1.0",
+  "description": "A terminal-based flashcard application with spaced repetition",
+  "author": "Devin Fitzsimons <aisflat439>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aisflat439/anki-cli"
+  },
+  "homepage": "https://github.com/aisflat439/anki-cli",
+  "keywords": [
+    "anki",
+    "flashcards",
+    "cli",
+    "terminal",
+    "spaced-repetition",
+    "study",
+    "tui",
+    "opentui"
+  ],
+  "bin": {
+    "anki": "./src/index.tsx"
+  },
   "module": "src/index.tsx",
   "type": "module",
-  "private": true,
   "scripts": {
     "dev": "bun run --watch src/index.tsx",
     "db:reset": "bun src/db/scripts/reset.ts",
