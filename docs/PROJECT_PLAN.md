@@ -3,15 +3,13 @@
 ## Phase 1: Make it Publishable 📦
 
 ### 1.1 Package Configuration
-- [ ] Update package.json for npm publishing
-  - [ ] Set proper package name (check npm availability)
-  - [ ] Add bin entry for CLI command
-  - [ ] Set up proper entry points
-  - [ ] Add keywords, description, author, license
-  - [ ] Define peer dependencies vs dependencies
-- [ ] Create .npmignore file
-- [ ] Set up build process (if needed)
-- [ ] Test local installation (`npm link` or `bun link`)
+- [x] Update package.json for npm publishing
+  - [x] Set proper package name (check npm availability)
+  - [x] Add bin entry for CLI command
+  - [x] Set up proper entry points
+  - [x] Add keywords, description, author, license
+  - [x] Define peer dependencies vs dependencies
+- [x] Create .npmignore file
 
 ### 1.2 CLI Setup
 - [ ] Add CLI argument parsing (e.g., commander or yargs)
@@ -34,6 +32,8 @@
 - [ ] Create changelog
 
 ### 1.5 Testing & Quality
+- [ ] Set up build process (if needed)
+- [ ] Test local installation (`bun link` or `npm link`)
 - [ ] Test installation process
 - [ ] Test on different platforms (macOS, Linux, Windows)
 - [ ] Add error handling for common issues

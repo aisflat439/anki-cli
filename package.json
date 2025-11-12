@@ -24,8 +24,16 @@
   },
   "module": "src/index.tsx",
   "type": "module",
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "bun": ">=1.0.0"
+  },
   "scripts": {
-    "dev": "bun run --watch src/index.tsx",
+    "dev": "bun run --watch src/index.tsx 2>&1 | tee dev.log",
+    "dev:log": "tail -f dev.log",
     "db:reset": "bun src/db/scripts/reset.ts",
     "db:seed": "bun src/db/scripts/seed.ts",
     "db:push": "bunx drizzle-kit push",
@@ -34,6 +42,7 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/bun": "latest",
+    "@types/yargs": "^17.0.34",
     "better-sqlite3": "^12.4.1",
     "drizzle-kit": "^0.31.6"
   },
@@ -44,6 +53,7 @@
     "@opentui/core": "^0.1.39",
     "@opentui/react": "^0.1.39",
     "drizzle-orm": "^0.44.7",
-    "react": "^19.1.1"
+    "react": "^19.1.1",
+    "yargs": "^18.0.0"
   }
 }
