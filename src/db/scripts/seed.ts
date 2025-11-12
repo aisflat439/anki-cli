@@ -75,18 +75,34 @@ export async function seed() {
   const tomorrow = new Date(now);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const reviewsData = deck1Cards.map((card, index) => ({
-    cardId: card.id,
-    reviewedAt: new Date(now.getTime() - (index + 1) * 3600000), // 1, 2, 3 hours ago
-    quality: 3 + index, // quality 3, 4, 5 (good to perfect)
-    nextReviewDate: new Date(tomorrow.getTime() + index * 86400000), // 1, 2, 3 days from tomorrow
-    interval: index + 1, // 1, 2, 3 days
-    easeFactor: 2.5 + index * 0.1, // 2.5, 2.6, 2.7
-  }));
+  // Create reviews spread over the last 90 days to show activity
+  const reviewsData = [];
+  const allCards = [...deck1Cards, ...deck2Cards];
+  
+  for (let daysAgo = 0; daysAgo < 90; daysAgo++) {
+    const reviewDate = new Date(now);
+    reviewDate.setDate(reviewDate.getDate() - daysAgo);
+    
+    // Random number of reviews per day (0-10)
+    const reviewCount = Math.floor(Math.random() * 11);
+    
+    for (let i = 0; i < reviewCount; i++) {
+      const randomCard = allCards[Math.floor(Math.random() * allCards.length)];
+      if (!randomCard) continue;
+      reviewsData.push({
+        cardId: randomCard.id,
+        reviewedAt: new Date(reviewDate.getTime() + i * 60000), // Spread throughout the day
+        quality: Math.floor(Math.random() * 4) + 2, // quality 2-5
+        nextReviewDate: new Date(reviewDate.getTime() + 86400000), // next day
+        interval: Math.floor(Math.random() * 7) + 1, // 1-7 days
+        easeFactor: 2.5,
+      });
+    }
+  }
 
   await db.insert(reviews).values(reviewsData);
 
-  console.log(`Created ${reviewsData.length} reviews for ${deck1.name}`);
+  console.log(`Created ${reviewsData.length} reviews across 90 days`);
   console.log("Seed completed!");
 }
 
