@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 import type { CliRenderer } from "@opentui/core";
+import { useKeyboard } from "@opentui/react";
 import fs from "fs";
 import path from "path";
 import clipboardy from "clipboardy";
@@ -34,6 +35,14 @@ export function LogProvider({ children, renderer }: { children: ReactNode; rende
   };
 
   const clearLogs = () => setLogs([]);
+
+  // Add keyboard shortcut for clearing logs (Ctrl+L like clearing terminal)
+  useKeyboard((key) => {
+    if (key.name === "l" && key.ctrl) {
+      clearLogs();
+      return true; // Prevent default behavior
+    }
+  });
 
   const handleMouseUp = async () => {
     const selection = renderer.getSelection?.();
@@ -70,7 +79,12 @@ export function LogProvider({ children, renderer }: { children: ReactNode; rende
             minHeight: 6
           }}
         >
-          <text style={{ marginBottom: 1 }} attributes={2}>Debug Logs (highlight text to copy):</text>
+          <box flexDirection="row" justifyContent="space-between" style={{ marginBottom: 1 }}>
+            <text attributes={2}>Debug Logs (highlight text to copy)</text>
+            {logs.length > 0 && (
+              <text attributes={1}>[Ctrl+L to clear]</text>
+            )}
+          </box>
           {logs.length === 0 ? (
             <text attributes={1}>No logs yet...</text>
           ) : (
