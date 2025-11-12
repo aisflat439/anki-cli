@@ -1,4 +1,5 @@
 import type { SelectOption } from "@opentui/core";
+import type { CliRenderer } from "@opentui/core";
 import { useState } from "react";
 import { useKeyboard } from "@opentui/react";
 import { Study } from "./Study";
@@ -82,9 +83,9 @@ function AppContent() {
   );
 }
 
-export function App() {
+export function App({ renderer }: { renderer: CliRenderer }) {
   return (
-    <LogProvider>
+    <LogProvider renderer={renderer}>
       <AppContent />
     </LogProvider>
   );

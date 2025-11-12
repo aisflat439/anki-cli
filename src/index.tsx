@@ -15,5 +15,8 @@ const cli = yargs(hideBin(process.argv))
 
 await cli.parse();
 
-const renderer = await createCliRenderer();
-createRoot(renderer).render(<App />);
+// Disable alternate screen so all text is copyable
+const renderer = await createCliRenderer({
+  useAlternateScreen: false,
+});
+createRoot(renderer).render(<App renderer={renderer} />);

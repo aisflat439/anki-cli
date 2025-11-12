@@ -1,5 +1,11 @@
 import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
+import type { CliRenderer } from "@opentui/core";
+import fs from "fs";
+import path from "path";
+import clipboardy from "clipboardy";
+
+const LOG_FILE = path.join(process.cwd(), "debug.log");
 
 interface LogContextType {
   logs: string[];
@@ -9,18 +15,46 @@ interface LogContextType {
 
 const LogContext = createContext<LogContextType | null>(null);
 
-export function LogProvider({ children }: { children: ReactNode }) {
+// Clear log file on module load
+fs.writeFileSync(LOG_FILE, `=== Debug Log Started: ${new Date().toISOString()} ===\n`);
+
+export function LogProvider({ children, renderer }: { children: ReactNode; renderer: CliRenderer }) {
   const [logs, setLogs] = useState<string[]>([]);
 
   const log = (...args: any[]) => {
     const message = args.map(arg => 
-      typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+      typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
     ).join(' ');
     
-    setLogs(prev => [...prev.slice(-4), message]); // Keep last 5 logs
+    // Write to file for copying
+    const timestamp = new Date().toISOString();
+    fs.appendFileSync(LOG_FILE, `[${timestamp}] ${message}\n`);
+    
+    setLogs(prev => [...prev.slice(-4), message]); // Keep last 5 logs for in-UI display
   };
 
   const clearLogs = () => setLogs([]);
+
+  const handleMouseUp = async () => {
+    const selection = renderer.getSelection?.();
+    const text = selection?.getSelectedText?.();
+    
+    if (text && text.length > 0) {
+      // OSC 52 escape sequence for terminal clipboard (works over SSH)
+      const base64 = Buffer.from(text).toString("base64");
+      const osc52 = `\x1b]52;c;${base64}\x07`;
+      const finalOsc52 = process.env["TMUX"] ? `\x1bPtmux;\x1b${osc52}\x1b\\` : osc52;
+      
+      // @ts-expect-error - writeOut exists but may not be in types
+      renderer.writeOut?.(finalOsc52);
+      
+      // Also copy to system clipboard
+      await clipboardy.write(text).catch(() => {});
+      
+      // Clear selection
+      renderer.clearSelection?.();
+    }
+  };
 
   return (
     <LogContext.Provider value={{ logs, log, clearLogs }}>
@@ -28,6 +62,7 @@ export function LogProvider({ children }: { children: ReactNode }) {
         {/* Log display at top */}
         <box 
           flexDirection="column" 
+          onMouseUp={handleMouseUp}
           style={{ 
             border: true,
             paddingBottom: 1,
@@ -35,7 +70,7 @@ export function LogProvider({ children }: { children: ReactNode }) {
             minHeight: 6
           }}
         >
-          <text style={{ marginBottom: 1 }} attributes={2}>Debug Logs:</text>
+          <text style={{ marginBottom: 1 }} attributes={2}>Debug Logs (highlight text to copy):</text>
           {logs.length === 0 ? (
             <text attributes={1}>No logs yet...</text>
           ) : (
