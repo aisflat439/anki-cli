@@ -2,11 +2,14 @@ import type { SelectOption } from "@opentui/core";
 import type { CliRenderer } from "@opentui/core";
 import { useState } from "react";
 import { useKeyboard } from "@opentui/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Study } from "./Study";
 import { Stats } from "./Stats";
 import { AddCard } from "./AddCard";
 import { AddDeck } from "./AddDeck";
 import { LogProvider, useLog } from "./LogProvider";
+
+const queryClient = new QueryClient();
 
 type View = "menu" | "study" | "stats" | "add-card" | "add-deck";
 
@@ -85,8 +88,10 @@ function AppContent() {
 
 export function App({ renderer }: { renderer: CliRenderer }) {
   return (
-    <LogProvider renderer={renderer}>
-      <AppContent />
-    </LogProvider>
+    <QueryClientProvider client={queryClient}>
+      <LogProvider renderer={renderer}>
+        <AppContent />
+      </LogProvider>
+    </QueryClientProvider>
   );
 }

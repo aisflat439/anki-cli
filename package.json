@@ -53,6 +53,7 @@
   "dependencies": {
     "@opentui/core": "^0.1.39",
     "@opentui/react": "^0.1.39",
+    "@tanstack/react-query": "^5.90.8",
     "drizzle-orm": "^0.44.7",
     "react": "^19.1.1",
     "yargs": "^18.0.0"
