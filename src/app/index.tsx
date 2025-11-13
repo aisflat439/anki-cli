@@ -40,8 +40,8 @@ function AppContent() {
   });
 
   const handleMenuSelect = (_index: number, option: SelectOption | null) => {
-    log("Selected:", option);
     if (!option) return;
+    log(`Selected: ${option.name}`);
     setCurrentView(option.value as View);
   };
 
