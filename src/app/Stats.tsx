@@ -21,16 +21,28 @@ export function Stats() {
     ? Array.from(reviewsByDay.values()).reduce((sum, count) => sum + count, 0)
     : 0;
 
-  // Build one week of data (last 7 days)
+  // Build grid data structure: array of weeks, each week has 7 days
   const today = new Date();
-  const oneWeekData = [];
-
-  for (let i = 6; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    const dayKey = date.toISOString().split("T")[0]!;
-    const count = reviewsByDay?.get(dayKey) || 0;
-    oneWeekData.push({ date: dayKey, count });
+  const startDate = new Date(today);
+  startDate.setDate(today.getDate() - 90); // Go back 90 days
+  
+  // Start from the first Sunday before our start date
+  const firstDay = new Date(startDate);
+  firstDay.setDate(startDate.getDate() - startDate.getDay());
+  
+  // Build weeks
+  const weeks = [];
+  let currentDate = new Date(firstDay);
+  
+  while (currentDate <= today) {
+    const week = [];
+    for (let day = 0; day < 7; day++) {
+      const dayKey = currentDate.toISOString().split("T")[0]!;
+      const count = reviewsByDay?.get(dayKey) || 0;
+      week.push({ date: dayKey, count });
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    weeks.push(week);
   }
 
   return (
@@ -47,9 +59,18 @@ export function Stats() {
         <text>{`Total reviews: ${totalReviews}`}</text>
       </box>
 
-      {/* Activity grid will go here */}
+      {/* Activity grid - all weeks */}
       <box flexDirection="column" style={{ marginTop: 2 }}>
-        <text>Activity grid (coming soon)</text>
+        <text>{`Total weeks: ${weeks.length}`}</text>
+        <box flexDirection="row" style={{ marginTop: 1, gap: 1 }}>
+          {weeks.map((week, weekIndex) => (
+            <box key={weekIndex} flexDirection="column">
+              {week.map((day, dayIndex) => (
+                <ActivityCube key={dayIndex} intensity={Math.min(day.count, 4)} />
+              ))}
+            </box>
+          ))}
+        </box>
       </box>
     </scrollbox>
   );
