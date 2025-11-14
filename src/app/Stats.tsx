@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getReviewActivityByDayLastYear } from "../db/domain/reviews";
+import { getReviewActivityByDayLastYear, getReviewStats } from "../db/domain/reviews";
 import { ActivityCube } from "../components/ActivityCube";
 
 export function Stats() {
@@ -7,8 +7,13 @@ export function Stats() {
     queryKey: ["reviewActivityLastYear"],
     queryFn: getReviewActivityByDayLastYear,
   });
+  
+  const { data: stats, isLoading: statsLoading } = useQuery({
+    queryKey: ["reviewStats"],
+    queryFn: getReviewStats,
+  });
 
-  if (isLoading) {
+  if (isLoading || statsLoading) {
     return (
       <box>
         <text style={{ marginTop: 2 }}>Loading...</text>
@@ -16,10 +21,7 @@ export function Stats() {
     );
   }
 
-  const totalDays = reviewsByDay?.size ?? 0;
-  const totalReviews = reviewsByDay
-    ? Array.from(reviewsByDay.values()).reduce((sum, count) => sum + count, 0)
-    : 0;
+  const { totalReviews = 0, longestStreak = 0, longestHotStreak = 0 } = stats || {};
 
   // Build grid data structure: array of weeks, each week has 7 days
   // Always show last 52 weeks (1 year)
@@ -53,11 +55,15 @@ export function Stats() {
       </box>
 
       <box style={{ marginTop: 1 }}>
-        <text>{`Total days with activity: ${totalDays}`}</text>
+        <text>{`Total reviews: ${totalReviews}`}</text>
       </box>
 
       <box style={{ marginTop: 1 }}>
-        <text>{`Total reviews: ${totalReviews}`}</text>
+        <text>{`Longest streak: ${longestStreak} days`}</text>
+      </box>
+
+      <box style={{ marginTop: 1 }}>
+        <text>{`Longest hot streak: ${longestHotStreak} days`}</text>
       </box>
 
       {/* Activity grid - all weeks */}
