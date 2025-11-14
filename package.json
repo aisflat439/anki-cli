@@ -32,7 +32,7 @@
     "bun": ">=1.0.0"
   },
   "scripts": {
-    "dev": "bun run --watch src/index.tsx 2>&1 | tee dev.log",
+    "dev": "bun run src/index.tsx",
     "dev:log": "tail -f dev.log",
     "db:reset": "bun src/db/scripts/reset.ts",
     "db:seed": "bun src/db/scripts/seed.ts",

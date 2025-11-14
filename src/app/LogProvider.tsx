@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 import type { CliRenderer } from "@opentui/core";
-import { useKeyboard } from "@opentui/react";
+import { useKeyboard, useTerminalDimensions } from "@opentui/react";
 import fs from "fs";
 import path from "path";
 import clipboardy from "clipboardy";
@@ -29,6 +29,7 @@ export function LogProvider({
   children: ReactNode;
   renderer: CliRenderer;
 }) {
+  const { width, height } = useTerminalDimensions();
   const [logs, setLogs] = useState<string[]>([]);
 
   const log = (...args: any[]) => {
@@ -80,35 +81,26 @@ export function LogProvider({
 
   return (
     <LogContext.Provider value={{ logs, log, clearLogs }}>
-      <box flexDirection="column" flexGrow={1}>
+      <box flexDirection="column" width={width} height={height}>
         {/* Compact log display at top */}
         <box
-          flexDirection="column"
+          flexDirection="row"
           onMouseUp={handleMouseUp}
+          justifyContent="space-between"
           style={{
-            border: true,
-            paddingBottom: 1,
-            marginBottom: 1,
-            height: 4
+            marginBottom: 1
           }}
         >
-          <box flexDirection="row" justifyContent="space-between">
-            <box>
-              <text attributes={2}>Debug Logs</text>
-            </box>
-            {logs.length > 0 && (
-              <box>
-                <text attributes={2}>[Ctrl+L]</text>
-              </box>
-            )}
-          </box>
           <box>
-            {logs.length === 0 ? (
-              <text attributes={2}>-</text>
-            ) : (
-              <text attributes={1}>{logs[logs.length - 1]}</text>
-            )}
+            <text attributes={2}>
+              {logs.length === 0 ? "Debug: -" : `Debug: ${logs[logs.length - 1]}`}
+            </text>
           </box>
+          {logs.length > 0 && (
+            <box>
+              <text attributes={2}>[Ctrl+L]</text>
+            </box>
+          )}
         </box>
 
         {/* Main content */}

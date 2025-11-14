@@ -15,8 +15,21 @@ const cli = yargs(hideBin(process.argv))
 
 await cli.parse();
 
-// Disable alternate screen so all text is copyable
 const renderer = await createCliRenderer({
-  useAlternateScreen: false,
+  useAlternateScreen: true,
+  exitOnCtrlC: true,
 });
+
+// Cleanup on exit
+process.on("SIGINT", () => {
+  renderer.stop();
+  process.exit(0);
+});
+
+process.on("uncaughtException", (error) => {
+  renderer.stop();
+  console.error("Uncaught exception:", error);
+  process.exit(1);
+});
+
 createRoot(renderer).render(<App renderer={renderer} />);

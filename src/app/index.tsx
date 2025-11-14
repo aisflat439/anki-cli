@@ -81,6 +81,27 @@ function AppContent() {
         <text attributes={1} style={{ marginTop: 1 }}>
           ↑/↓: Navigate | Enter: Select | ESC: Quit
         </text>
+        <text attributes={1} style={{ marginTop: 1 }}>
+          ↑/↓: Navigate | Enter: Select | ESC: Quit
+        </text>
+        <text attributes={1} style={{ marginTop: 1 }}>
+          ↑/↓: Navigate | Enter: Select | ESC: Quit
+        </text>
+        <text attributes={1} style={{ marginTop: 1 }}>
+          ↑/↓: Navigate | Enter: Select | ESC: Quit
+        </text>
+        <text attributes={1} style={{ marginTop: 1 }}>
+          ↑/↓: Navigate | Enter: Select | ESC: Quit
+        </text>
+        <text attributes={1} style={{ marginTop: 1 }}>
+          ↑/↓: Navigate | Enter: Select | ESC: Quit
+        </text>
+        <text attributes={1} style={{ marginTop: 1 }}>
+          ↑/↓: Navigate | Enter: Select | ESC: Quit
+        </text>
+        <text attributes={1} style={{ marginTop: 1 }}>
+          ↑/↓: Navigate | Enter: Select | ESC: Quit
+        </text>
       </box>
     </box>
   );

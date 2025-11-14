@@ -34,10 +34,11 @@ export function Stats() {
   }
 
   return (
-    <box flexDirection="column" flexGrow={1} style={{ padding: 2 }}>
-      <text attributes={1}>ESC: Back to Menu</text>
+    <scrollbox focused flexGrow={1}>
+      <box>
+        <text attributes={1}>ESC: Back to Menu</text>
+      </box>
 
-      {/*
       <box style={{ marginTop: 1 }}>
         <text>{`Total days with activity: ${totalDays}`}</text>
       </box>
@@ -46,24 +47,10 @@ export function Stats() {
         <text>{`Total reviews: ${totalReviews}`}</text>
       </box>
 
-      <box flexDirection="row" style={{ marginTop: 2, gap: 1 }}>
-        <text>Test cubes:</text>
-        <ActivityCube intensity={0} />
-        <ActivityCube intensity={1} />
-        <ActivityCube intensity={2} />
-        <ActivityCube intensity={3} />
-        <ActivityCube intensity={4} />
-      </box>*/}
-
+      {/* Activity grid will go here */}
       <box flexDirection="column" style={{ marginTop: 2 }}>
-        <ActivityCube intensity={0} />
-        <ActivityCube intensity={1} />
-        <ActivityCube intensity={2} />
-        <ActivityCube intensity={3} />
-        <ActivityCube intensity={4} />
-        <ActivityCube intensity={2} />
-        <ActivityCube intensity={1} />
+        <text>Activity grid (coming soon)</text>
       </box>
-    </box>
+    </scrollbox>
   );
 }
