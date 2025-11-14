@@ -63,14 +63,28 @@ export function Stats() {
       {/* Activity grid - all weeks */}
       <box flexDirection="column" style={{ marginTop: 2 }}>
         <text>{`Total weeks: ${weeks.length}`}</text>
-        <box flexDirection="row" style={{ marginTop: 1, gap: 1 }}>
-          {weeks.map((week, weekIndex) => (
-            <box key={weekIndex} flexDirection="column">
-              {week.map((day, dayIndex) => (
-                <ActivityCube key={dayIndex} intensity={Math.min(day.count, 4)} />
-              ))}
-            </box>
-          ))}
+        <box flexDirection="row" style={{ marginTop: 1 }}>
+          {/* Day labels */}
+          <box flexDirection="column" style={{ marginRight: 1 }}>
+            <box><text> </text></box>
+            <box><text>Mon</text></box>
+            <box><text> </text></box>
+            <box><text>Wed</text></box>
+            <box><text> </text></box>
+            <box><text>Fri</text></box>
+            <box><text> </text></box>
+          </box>
+          
+          {/* Grid */}
+          <box flexDirection="row" style={{ gap: 1 }}>
+            {weeks.map((week, weekIndex) => (
+              <box key={weekIndex} flexDirection="column">
+                {week.map((day, dayIndex) => (
+                  <ActivityCube key={dayIndex} intensity={Math.min(day.count, 4)} />
+                ))}
+              </box>
+            ))}
+          </box>
         </box>
       </box>
     </scrollbox>
