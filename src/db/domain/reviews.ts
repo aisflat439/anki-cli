@@ -1,6 +1,6 @@
 import { db } from "../db";
 import { reviews } from "../schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, gte } from "drizzle-orm";
 
 type ReviewId = Pick<typeof reviews.$inferSelect, "id">;
 type ReviewCardId = Pick<typeof reviews.$inferSelect, "cardId">;
@@ -46,13 +46,20 @@ export async function deleteReview({ id }: ReviewId) {
   await db.delete(reviews).where(eq(reviews.id, id));
 }
 
-export async function getReviewActivityByDay() {
-  const allReviews = await db.select().from(reviews);
+export async function getReviewActivityByDayLastYear() {
+  // Only fetch reviews from the last 52 weeks
+  const oneYearAgo = new Date();
+  oneYearAgo.setDate(oneYearAgo.getDate() - (52 * 7));
+  
+  const recentReviews = await db
+    .select()
+    .from(reviews)
+    .where(gte(reviews.reviewedAt, oneYearAgo));
   
   // Group reviews by day
   const reviewsByDay = new Map<string, number>();
   
-  for (const review of allReviews) {
+  for (const review of recentReviews) {
     if (!review.reviewedAt) continue;
     const date = new Date(review.reviewedAt);
     const dayKey = date.toISOString().split('T')[0]!; // YYYY-MM-DD format

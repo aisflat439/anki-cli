@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { getReviewActivityByDay } from "../db/domain/reviews";
+import { getReviewActivityByDayLastYear } from "../db/domain/reviews";
 import { ActivityCube } from "../components/ActivityCube";
 
 export function Stats() {
   const { data: reviewsByDay, isLoading } = useQuery({
-    queryKey: ["reviewActivity"],
-    queryFn: getReviewActivityByDay,
+    queryKey: ["reviewActivityLastYear"],
+    queryFn: getReviewActivityByDayLastYear,
   });
 
   if (isLoading) {
@@ -22,9 +22,10 @@ export function Stats() {
     : 0;
 
   // Build grid data structure: array of weeks, each week has 7 days
+  // Always show last 52 weeks (1 year)
   const today = new Date();
   const startDate = new Date(today);
-  startDate.setDate(today.getDate() - 90); // Go back 90 days
+  startDate.setDate(today.getDate() - (52 * 7)); // Go back 52 weeks
   
   // Start from the first Sunday before our start date
   const firstDay = new Date(startDate);
