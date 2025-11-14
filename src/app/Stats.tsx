@@ -32,7 +32,7 @@ export function Stats() {
   firstDay.setDate(startDate.getDate() - startDate.getDay());
   
   // Build weeks
-  const weeks = [];
+  const weeks: Array<Array<{ date: string; count: number }>> = [];
   let currentDate = new Date(firstDay);
   
   while (currentDate <= today) {
@@ -62,8 +62,53 @@ export function Stats() {
 
       {/* Activity grid - all weeks */}
       <box flexDirection="column" style={{ marginTop: 2 }}>
-        <text>{`Total weeks: ${weeks.length}`}</text>
+        
+        {/* Month labels - render as single continuous string */}
         <box flexDirection="row" style={{ marginTop: 1 }}>
+          <box style={{ marginRight: 1 }}><text>   </text></box>
+          <box>
+            <text>
+              {(() => {
+                let output = '';
+                let lastShownMonth = -1;
+                let skipNext = 0;
+                
+                for (let i = 0; i < weeks.length; i++) {
+                  if (skipNext > 0) {
+                    skipNext--;
+                    if (i < weeks.length - 1) output += ' ';
+                    continue;
+                  }
+                  
+                  const week = weeks[i]!;
+                  const firstDayOfWeek = new Date(week[0]!.date);
+                  const monthName = firstDayOfWeek.toLocaleDateString('en-US', { month: 'short' });
+                  const currentMonth = firstDayOfWeek.getMonth();
+                  
+                  const isFirstWeekOfMonth = firstDayOfWeek.getDate() <= 7;
+                  const shouldShowLabel = isFirstWeekOfMonth && currentMonth !== lastShownMonth;
+                  
+                  if (shouldShowLabel) {
+                    output += monthName;
+                    lastShownMonth = currentMonth;
+                    // Skip the next 2 weeks (since month name is 3 chars, and we already used 1 position)
+                    skipNext = 2;
+                  } else {
+                    output += ' ';
+                  }
+                  
+                  // Add gap after each week except the last
+                  if (i < weeks.length - 1) {
+                    output += ' ';
+                  }
+                }
+                return output;
+              })()}
+            </text>
+          </box>
+        </box>
+        
+        <box flexDirection="row">
           {/* Day labels */}
           <box flexDirection="column" style={{ marginRight: 1 }}>
             <box><text> </text></box>
