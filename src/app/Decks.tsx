@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { getAllDecks } from "../db/domain/decks";
 import { Frame } from "./Frame";
+import { useNavigate } from "./Router";
 import type { SelectOption } from "@opentui/core";
 
 export function Decks() {
+  const navigate = useNavigate();
   const { data: decks, isLoading } = useQuery({
     queryKey: ["decks"],
     queryFn: getAllDecks,
@@ -31,8 +33,10 @@ export function Decks() {
           options={deckOptions}
           focused={true}
           showDescription={true}
-          onSelect={(index, option) => {
-            console.log("Selected deck:", option);
+          onSelect={(_index, option) => {
+            if (option) {
+              navigate("deck-detail", { deckId: parseInt(option.value) });
+            }
           }}
           style={{ height: 8 }}
         />
