@@ -33,6 +33,7 @@
   },
   "scripts": {
     "dev": "bun run src/index.tsx",
+    "dev:inspect": "bun --inspect run src/index.tsx 2>&1 | tee inspect.log",
     "dev:log": "tail -f dev.log",
     "db:reset": "bun src/db/scripts/reset.ts",
     "db:seed": "bun src/db/scripts/seed.ts",
