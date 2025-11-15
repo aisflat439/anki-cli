@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+import { useKeyboard } from "@opentui/react";
 import { getDeckById } from "../db/domain/decks";
 import { getCardsByDeckId } from "../db/domain/cards";
+import { useNavigate } from "./Router";
 import { Frame } from "./Frame";
 
 type DeckDetailProps = {
@@ -8,6 +10,8 @@ type DeckDetailProps = {
 };
 
 export function DeckDetail({ deckId }: DeckDetailProps) {
+  const navigate = useNavigate();
+
   const { data: deck, isLoading: deckLoading } = useQuery({
     queryKey: ["deck", deckId],
     queryFn: () => getDeckById(deckId),
@@ -16,6 +20,13 @@ export function DeckDetail({ deckId }: DeckDetailProps) {
   const { data: cards, isLoading: cardsLoading } = useQuery({
     queryKey: ["cards", deckId],
     queryFn: () => getCardsByDeckId(deckId),
+  });
+
+  useKeyboard((key) => {
+    if (key.name === "a") {
+      navigate("add-card", { deckId });
+      return true;
+    }
   });
 
   if (deckLoading || cardsLoading) {
@@ -35,7 +46,7 @@ export function DeckDetail({ deckId }: DeckDetailProps) {
   }
 
   return (
-    <Frame title={deck.name}>
+    <Frame title={deck.name} footer="A: Add Card | ESC: Back">
       <box flexDirection="column" style={{ gap: 1 }}>
         <text>{`Cards: ${cards?.length || 0}`}</text>
         

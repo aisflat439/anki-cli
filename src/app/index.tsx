@@ -19,7 +19,7 @@ function AppContent() {
     case "stats":
       return <Stats />;
     case "add-card":
-      return <AddCard />;
+      return <AddCard deckId={params.deckId} />;
     case "decks":
       return <Decks />;
     case "deck-detail":

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createCard } from "../db/domain/cards";
 import { Frame } from "./Frame";
@@ -12,15 +12,19 @@ type CardFormState = {
   deckId: number | null;
 };
 
-const initialState = {
-  step: 1,
-  front: "",
-  back: "",
-  deckId: null,
+type AddCardProps = {
+  deckId?: number;
 };
 
-export function AddCard() {
+export function AddCard({ deckId: preSelectedDeckId }: AddCardProps = {}) {
   const queryClient = useQueryClient();
+
+  const initialState = {
+    step: 1,
+    front: "",
+    back: "",
+    deckId: preSelectedDeckId || null,
+  };
 
   const [form, setForm] = useState<CardFormState>(initialState);
 
@@ -39,6 +43,23 @@ export function AddCard() {
       setForm(initialState);
     },
   });
+
+  useEffect(() => {
+    const isReadyToAutoSave =
+      form.step === 3 &&
+      preSelectedDeckId &&
+      form.front &&
+      form.back &&
+      !createCardMutation.isPending;
+
+    if (isReadyToAutoSave) {
+      createCardMutation.mutate({
+        deckId: preSelectedDeckId,
+        question: form.front,
+        answer: form.back,
+      });
+    }
+  }, [form.step]);
 
   if (form.step === 1) {
     return (
@@ -93,6 +114,14 @@ export function AddCard() {
     return (
       <Frame title="Error">
         <text>{`Error: ${createCardMutation.error}`}</text>
+      </Frame>
+    );
+  }
+
+  if (preSelectedDeckId) {
+    return (
+      <Frame title="Saving...">
+        <text>Saving card...</text>
       </Frame>
     );
   }
