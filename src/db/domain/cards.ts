@@ -1,5 +1,5 @@
-import { db } from "./db";
-import { cards } from "./schema";
+import { db } from "../db";
+import { cards } from "../schema";
 import { eq } from "drizzle-orm";
 
 export async function createCard(
