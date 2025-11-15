@@ -60,6 +60,8 @@ export function RouterProvider({ children }: { children: ReactNode }) {
       goBack();
       return true;
     }
+    // Don't handle other keys - let components handle them
+    return false;
   });
 
   return (
