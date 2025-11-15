@@ -12,7 +12,7 @@ import { LogProvider, useLog } from "./LogProvider";
 
 const queryClient = new QueryClient();
 
-type View = "menu" | "study" | "stats" | "add-card" | "add-deck";
+type View = "menu" | "study" | "stats" | "add-card" | "decks";
 
 function AppContent() {
   const [currentView, setCurrentView] = useState<View>("menu");
@@ -36,24 +36,19 @@ function AppContent() {
   };
 
   // Render different views
-  if (currentView === "study") {
-    return <Study />;
+  switch (currentView) {
+    case "study":
+      return <Study />;
+    case "stats":
+      return <Stats />;
+    case "add-card":
+      return <AddCard />;
+    case "decks":
+      return <Decks />;
+    case "menu":
+    default:
+      return <Main onSelect={handleMenuSelect} />;
   }
-
-  if (currentView === "stats") {
-    return <Stats />;
-  }
-
-  if (currentView === "add-card") {
-    return <AddCard />;
-  }
-
-  if (currentView === "add-deck") {
-    return <Decks />;
-  }
-
-  // Main menu view
-  return <Main onSelect={handleMenuSelect} />;
 }
 
 export function App({ renderer }: { renderer: CliRenderer }) {

@@ -14,7 +14,7 @@ export function Main({ onSelect }: MainProps) {
       description: "Create a new flashcard",
       value: "add-card",
     },
-    { name: "Add Deck", description: "Create a new deck", value: "add-deck" },
+    { name: "Decks", description: "Manage and create decks", value: "decks" },
   ];
 
   return (
