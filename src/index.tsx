@@ -32,4 +32,4 @@ process.on("uncaughtException", (error) => {
   process.exit(1);
 });
 
-createRoot(renderer).render(<App renderer={renderer} />);
+createRoot(renderer).render(<App />);
