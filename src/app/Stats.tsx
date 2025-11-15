@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getReviewActivityByDayLastYear, getReviewStats } from "../db/domain/reviews";
 import { ActivityCube } from "../components/ActivityCube";
+import { Frame } from "./Frame";
 
 export function Stats() {
   const { data: reviewsByDay, isLoading } = useQuery({
@@ -49,10 +50,8 @@ export function Stats() {
   }
 
   return (
-    <scrollbox focused flexGrow={1}>
-      <box>
-        <text attributes={1}>ESC: Back to Menu</text>
-      </box>
+    <Frame title="Stats">
+      <scrollbox focused flexGrow={1}>
 
       <box style={{ marginTop: 1 }}>
         <text>{`Total reviews: ${totalReviews}`}</text>
@@ -138,6 +137,7 @@ export function Stats() {
           </box>
         </box>
       </box>
-    </scrollbox>
+      </scrollbox>
+    </Frame>
   );
 }
