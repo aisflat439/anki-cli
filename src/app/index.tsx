@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Study } from "./Study";
 import { Stats } from "./Stats";
 import { AddCard } from "./AddCard";
-import { AddDeck } from "./AddDeck";
+import { Decks } from "./Decks";
 import { LogProvider, useLog } from "./LogProvider";
 
 const queryClient = new QueryClient();
@@ -59,7 +59,7 @@ function AppContent() {
   }
 
   if (currentView === "add-deck") {
-    return <AddDeck />;
+    return <Decks />;
   }
 
   // Main menu view
