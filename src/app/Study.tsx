@@ -1,11 +1,21 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useKeyboard } from "@opentui/react";
 import { getCardsForReview } from "../db/domain/reviews";
 import { Frame } from "./Frame";
 
 export function Study() {
+  const [isFlipped, setIsFlipped] = useState(false);
+
   const { data: cards, isLoading } = useQuery({
     queryKey: ["cards-for-review"],
     queryFn: getCardsForReview,
+  });
+
+  useKeyboard((key) => {
+    if (key.name === "space") {
+      setIsFlipped(!isFlipped);
+    }
   });
 
   if (isLoading) {
@@ -24,15 +34,21 @@ export function Study() {
     );
   }
 
+  // Automatically start studying - show the outlet
+  const currentCard = cards[0]!; // Start with first card
+
   return (
     <Frame title="Study">
-      <box flexDirection="column" style={{ gap: 1 }}>
-        <text>{`Cards to review: ${cards.length}`}</text>
-        {cards.map((card) => (
-          <text key={card.cardId}>
-            {`${card.question} (Due: ${card.nextReviewDate ? new Date(card.nextReviewDate).toLocaleDateString() : "New"})`}
-          </text>
-        ))}
+      <box flexDirection="column" flexGrow={1}>
+        {/* Card content area - grows to fill space */}
+        <box flexGrow={1}>
+          <text>{isFlipped ? currentCard.answer : currentCard.question}</text>
+        </box>
+
+        {/* Difficulty options in bordered box at bottom */}
+        <box style={{ border: true, padding: 1 }}>
+          <text>Space: Flip | 1: Again | 2: Hard | 3: Good | 4: Easy</text>
+        </box>
       </box>
     </Frame>
   );
