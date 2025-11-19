@@ -35,6 +35,7 @@
     "dev": "bun run src/index.tsx",
     "dev:inspect": "bun --inspect run src/index.tsx 2>&1 | tee inspect.log",
     "dev:log": "tail -f dev.log",
+    "mcp": "bun run src/mcp/server.ts",
     "db:reset": "bun src/db/scripts/reset.ts",
     "db:seed": "bun src/db/scripts/seed.ts",
     "db:push": "bunx drizzle-kit push",
@@ -52,6 +53,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.22.0",
     "@opentui/core": "^0.1.39",
     "@opentui/react": "^0.1.39",
     "@tanstack/react-query": "^5.90.8",

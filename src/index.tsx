@@ -7,6 +7,7 @@ import { App } from "./app";
 
 const cli = yargs(hideBin(process.argv))
   .scriptName("anki")
+  .usage("Terminal flashcard app with spaced repetition")
   .version("0.1.0")
   .alias("version", "v")
   .help("help")
