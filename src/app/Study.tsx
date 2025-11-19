@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useKeyboard } from "@opentui/react";
-import { getCardsForReview } from "../db/domain/reviews";
+import { getCardsForReview, reviewCard } from "../db/domain/reviews";
 import { Frame } from "./Frame";
 
 type StudyState = {
@@ -21,6 +21,14 @@ export function Study() {
     queryFn: getCardsForReview,
   });
 
+  const saveReviewMutation = useMutation({
+    mutationFn: ({ cardId, quality }: { cardId: number; quality: number }) =>
+      reviewCard(cardId, quality),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cards-for-review"] });
+    },
+  });
+
   const shuffledCards = useMemo(() => {
     if (!cards) return [];
     const shuffled = [...cards];
@@ -34,19 +42,14 @@ export function Study() {
   }, [cards]);
 
   const handleDifficultyRating = (rating: number) => {
-    if (rating === 1) {
-      setState({
-        currentCardIndex: 0,
-        isFlipped: false,
-      });
-      queryClient.invalidateQueries({ queryKey: ["cards-for-review"] });
-      return;
-    }
-
     const nextIndex = state.currentCardIndex + 1;
 
-    if (nextIndex >= shuffledCards.length) {
-      queryClient.invalidateQueries({ queryKey: ["cards-for-review"] });
+    if (rating >= 2 && rating <= 4) {
+      const currentCard = shuffledCards[state.currentCardIndex]!;
+      saveReviewMutation.mutate({
+        cardId: currentCard.cardId,
+        quality: rating,
+      });
     }
 
     setState({

@@ -10,6 +10,71 @@ export async function createReview(data: typeof reviews.$inferInsert) {
   return review;
 }
 
+/**
+ * Create a review for a card based on quality rating.
+ * Uses SM-2 (SuperMemo 2) spaced repetition algorithm.
+ *
+ * @param cardId - The ID of the card being reviewed
+ * @param quality - Quality rating (1-4): 1=Again, 2=Hard, 3=Good, 4=Easy
+ * @returns The created review
+ */
+export async function reviewCard(cardId: number, quality: number) {
+  const now = new Date();
+
+  const lastReview = await getLatestReviewForCard({ cardId });
+
+  let intervalDays: number;
+  let easeFactor: number;
+
+  if (!lastReview) {
+    easeFactor = 2.5;
+    if (quality === 1)
+      intervalDays = 0; // Review again in same session
+    else if (quality === 2) intervalDays = 1;
+    else if (quality === 3) intervalDays = 1;
+    else intervalDays = 4; // quality 4
+  } else {
+    const prevEase = lastReview.easeFactor;
+    const prevInterval = lastReview.interval;
+
+    // Calculate new ease factor: EF' = EF + (0.1 - (5-q) * (0.08 + (5-q) * 0.02))
+    // Simplified: good answers increase ease, bad decrease it
+    easeFactor = Math.max(
+      1.3,
+      prevEase + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)),
+    );
+
+    // Calculate new interval based on quality
+    if (quality === 1) {
+      // Again - reset to beginning
+      intervalDays = 1;
+    } else if (quality === 2) {
+      // Hard - smaller multiplier
+      intervalDays = Math.max(1, Math.round(prevInterval * 1.2));
+    } else {
+      // Good (3) or Easy (4) - use ease factor
+      intervalDays = Math.round(prevInterval * easeFactor);
+      if (quality === 4) {
+        // Easy gets bonus multiplier
+        intervalDays = Math.round(intervalDays * 1.3);
+      }
+    }
+  }
+
+  const nextReviewDate = new Date(
+    now.getTime() + intervalDays * 24 * 60 * 60 * 1000,
+  );
+
+  return createReview({
+    cardId,
+    quality,
+    reviewedAt: now,
+    nextReviewDate,
+    interval: intervalDays,
+    easeFactor,
+  });
+}
+
 export async function getAllReviews() {
   return await db.select().from(reviews);
 }
