@@ -150,6 +150,40 @@ export async function getCardsForReview() {
   return dueCards;
 }
 
+/**
+ * Get the next single card due for review.
+ *
+ * @returns The next card due for review, or undefined if no cards are due
+ */
+export async function getNextCardForReview() {
+  const now = new Date();
+
+  const [card] = await db
+    .select({
+      cardId: cards.id,
+      question: cards.question,
+      answer: cards.answer,
+      deckId: cards.deckId,
+      nextReviewDate: reviews.nextReviewDate,
+    })
+    .from(cards)
+    .leftJoin(
+      reviews,
+      sql`${reviews.cardId} = ${cards.id} AND ${reviews.id} = (
+        SELECT id FROM ${reviews} r2
+        WHERE r2.card_id = ${cards.id}
+        ORDER BY reviewed_at DESC
+        LIMIT 1
+      )`,
+    )
+    .where(
+      or(isNull(reviews.nextReviewDate), lte(reviews.nextReviewDate, now)),
+    )
+    .limit(1);
+
+  return card;
+}
+
 export async function getReviewActivityByDayLastYear() {
   // Only fetch reviews from the last 52 weeks
   const oneYearAgo = new Date();
