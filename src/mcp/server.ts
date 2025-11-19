@@ -4,7 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { getAllDecks, createDeck } from "../db/domain/decks";
 import { createCard } from "../db/domain/cards";
-import { getNextCardForReview, reviewCard } from "../db/domain/reviews";
+import { getNextCardForReview, getCardsForReview, reviewCard } from "../db/domain/reviews";
 
 const server = new McpServer({
   name: "anki-cli",
@@ -71,6 +71,37 @@ server.registerTool(
         {
           type: "text" as const,
           text: `Added card to deck ${args.deckId}: "${args.front}" → "${args.back}"`,
+        },
+      ],
+    };
+  }
+);
+
+// Register get_cards_for_review tool
+server.registerTool(
+  "get_cards_for_review",
+  {
+    description: "Get all cards that are due for review. Returns full list of cards ready to study.",
+  },
+  async () => {
+    const cards = await getCardsForReview();
+    
+    if (cards.length === 0) {
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: "No cards due for review at this time.",
+          },
+        ],
+      };
+    }
+    
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: JSON.stringify(cards, null, 2),
         },
       ],
     };
