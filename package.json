@@ -36,6 +36,7 @@
     "dev:inspect": "bun --inspect run src/index.tsx 2>&1 | tee inspect.log",
     "dev:log": "tail -f dev.log",
     "mcp": "bun run src/mcp/server.ts",
+    "mcp:inspect": "npx @modelcontextprotocol/inspector bun run mcp",
     "db:reset": "bun src/db/scripts/reset.ts",
     "db:seed": "bun src/db/scripts/seed.ts",
     "db:push": "bunx drizzle-kit push",
