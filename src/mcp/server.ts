@@ -3,7 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { getAllDecks, createDeck } from "../db/domain/decks";
-import { createCard } from "../db/domain/cards";
+import { createCard, updateCard, deleteCard } from "../db/domain/cards";
 import { getNextCardForReview, getCardsForReview, reviewCard } from "../db/domain/reviews";
 
 const server = new McpServer({
@@ -197,6 +197,69 @@ server.registerTool(
             nextReviewDate: review.nextReviewDate,
             intervalDays: review.interval,
           }, null, 2),
+        },
+      ],
+    };
+  }
+);
+
+// Register update_card tool
+server.registerTool(
+  "update_card",
+  {
+    description: "Update an existing flashcard's question and/or answer",
+    inputSchema: {
+      cardId: z.number().describe("ID of the card to update"),
+      front: z.string().optional().describe("New front of the card (question)"),
+      back: z.string().optional().describe("New back of the card (answer)"),
+    },
+  },
+  async (args) => {
+    const updates: { question?: string; answer?: string } = {};
+    if (args.front !== undefined) updates.question = args.front;
+    if (args.back !== undefined) updates.answer = args.back;
+
+    const card = await updateCard(args.cardId, updates);
+    
+    if (!card) {
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: `Error: Card ${args.cardId} not found`,
+          },
+        ],
+      };
+    }
+
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: `Updated card ${args.cardId}: "${card.question}" → "${card.answer}"`,
+        },
+      ],
+    };
+  }
+);
+
+// Register delete_card tool
+server.registerTool(
+  "delete_card",
+  {
+    description: "Delete a flashcard",
+    inputSchema: {
+      cardId: z.number().describe("ID of the card to delete"),
+    },
+  },
+  async (args) => {
+    await deleteCard(args.cardId);
+    
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: `Deleted card ${args.cardId}`,
         },
       ],
     };

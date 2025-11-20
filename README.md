@@ -1,44 +1,49 @@
 # anki-cli
 
-A CLI flashcard app built with OpenTUI, Drizzle ORM, and Bun SQLite.
+A terminal flashcard app with spaced repetition and AI integration.
 
-## Setup
-
-Install dependencies:
+## Install
 
 ```bash
-bun install
+bun install -g anki-cli
 ```
 
-Setup the database:
-
-```bash
-bun db:push   # Create database tables
-bun db:seed   # Populate with sample data
-```
-
-## Development
+## Usage
 
 Run the app:
 
 ```bash
-bun dev
+anki
 ```
 
-## Database Commands
+**Keyboard shortcuts:**
+- `↑/↓` - Navigate menus
+- `Enter` - Select
+- `ESC` - Go back
+- `Space` - Flip card (in study mode)
+- `1-4` - Rate difficulty (Again/Hard/Good/Easy)
 
-```bash
-bun db:reset   # Clear all data from the database
-bun db:seed    # Seed the database with sample data
-bun db:push    # Push schema changes to the database
-bun db:studio  # Open Drizzle Studio to browse the database
+## Use with AI (OpenCode)
+
+Add this to your `opencode.jsonc`:
+
+```jsonc
+{
+  "mcp": {
+    "anki": {
+      "type": "local",
+      "command": ["anki-mcp"],
+      "enabled": true
+    }
+  }
+}
 ```
+
+Then ask your AI to create cards, start reviews, or manage your decks.
 
 ## Tech Stack
 
 - **OpenTUI** - Terminal UI framework
-- **Drizzle ORM** - Type-safe database ORM
-- **Bun SQLite** - Native SQLite driver
-- **React** - UI components
-
-This project was created using `bun create tui`. [create-tui](https://git.new/create-tui) is the easiest way to get started with OpenTUI.
+- **Drizzle ORM** - SQLite database
+- **Bun** - JavaScript runtime
+- **MCP** - Model Context Protocol for AI integration

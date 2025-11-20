@@ -20,7 +20,8 @@
     "opentui"
   ],
   "bin": {
-    "anki": "./src/index.tsx"
+    "anki": "./src/index.tsx",
+    "anki-mcp": "./src/mcp/server.ts"
   },
   "module": "src/index.tsx",
   "type": "module",
