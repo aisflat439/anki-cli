@@ -6,11 +6,13 @@ export type View =
   | "study"
   | "stats"
   | "add-card"
+  | "edit-card"
   | "decks"
   | "deck-detail";
 
 interface RouteParams {
   deckId?: number;
+  cardId?: number;
 }
 
 interface RouteState {

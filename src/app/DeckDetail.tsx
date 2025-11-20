@@ -1,7 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useKeyboard } from "@opentui/react";
+import type { SelectOption } from "@opentui/core";
 import { getDeckById } from "../db/domain/decks";
-import { getCardsByDeckId } from "../db/domain/cards";
+import { getCardsByDeckId, deleteCard } from "../db/domain/cards";
 import { useNavigate } from "./Router";
 import { Frame } from "./Frame";
 
@@ -11,6 +13,8 @@ type DeckDetailProps = {
 
 export function DeckDetail({ deckId }: DeckDetailProps) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [selectedCardId, setSelectedCardId] = useState<number | null>(null);
 
   const { data: deck, isLoading: deckLoading } = useQuery({
     queryKey: ["deck", deckId],
@@ -22,9 +26,27 @@ export function DeckDetail({ deckId }: DeckDetailProps) {
     queryFn: () => getCardsByDeckId(deckId),
   });
 
+  const deleteCardMutation = useMutation({
+    mutationFn: (cardId: number) => deleteCard(cardId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cards", deckId] });
+      setSelectedCardId(null);
+    },
+  });
+
   useKeyboard((key) => {
     if (key.name === "a") {
       navigate("add-card", { deckId });
+      return true;
+    }
+    
+    if (key.name === "e" && selectedCardId) {
+      navigate("edit-card", { cardId: selectedCardId });
+      return true;
+    }
+    
+    if (key.name === "d" && selectedCardId) {
+      deleteCardMutation.mutate(selectedCardId);
       return true;
     }
   });
@@ -45,18 +67,38 @@ export function DeckDetail({ deckId }: DeckDetailProps) {
     );
   }
 
+  const cardOptions: SelectOption[] = (cards || []).map((card) => ({
+    name: card.question,
+    description: card.answer,
+    value: card.id,
+  }));
+
+  const handleSelect = (_index: number, option: SelectOption | null) => {
+    if (option) {
+      setSelectedCardId(option.value as number);
+    }
+  };
+
   return (
-    <Frame title={deck.name} footer="A: Add Card | ESC: Back">
+    <Frame 
+      title={deck.name} 
+      footer={selectedCardId 
+        ? "A: Add | E: Edit | D: Delete | ESC: Back" 
+        : "A: Add Card | ESC: Back"
+      }
+    >
       <box flexDirection="column" style={{ gap: 1 }}>
         <text>{`Cards: ${cards?.length || 0}`}</text>
         
-        <box style={{ border: true, padding: 1 }}>
+        <box style={{ border: true, height: 15 }}>
           {cards && cards.length > 0 ? (
-            <box flexDirection="column">
-              {cards.map((card: any) => (
-                <text key={card.id}>{`- ${card.question}`}</text>
-              ))}
-            </box>
+            <select
+              options={cardOptions}
+              focused={true}
+              showDescription={true}
+              onSelect={handleSelect}
+              style={{ height: 13 }}
+            />
           ) : (
             <text>No cards in this deck yet</text>
           )}
