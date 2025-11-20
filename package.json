@@ -1,7 +1,7 @@
 {
   "name": "anki-cli",
-  "version": "0.1.1",
-  "description": "A terminal-based flashcard application with spaced repetition",
+  "version": "0.1.2",
+  "description": "A terminal-based flashcard application with mcp and spaced repetition",
   "author": "Devin Fitzsimons <aisflat439>",
   "license": "MIT",
   "repository": {
