@@ -2,6 +2,8 @@
 
 A terminal flashcard app with spaced repetition and AI integration.
 
+https://github.com/user-attachments/assets/ddc4fa3d-b378-409f-b074-bd1ff82d03f0
+
 ## Install
 
 ```bash
